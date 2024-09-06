@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/post.dart';
 import '../models/user.dart';
 import '../models/contact.dart';
@@ -10,21 +11,12 @@ import 'dart:io';
 class FirebaseService {
   static final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
   static final DatabaseReference _database = FirebaseDatabase.instance.ref();
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static Future<void> createPost(Post post) async {
     try {
-      final newPostRef = _database.child('posts').push();
-      await newPostRef.set({
-        'userId': post.userId,
-        'content': post.content,
-        'photoUrls': post.photoUrls,
-        'salaryRange': post.salaryRange,
-        'expertise': post.expertise,
-        'deadline': post.deadline?.toIso8601String(),
-        'location': post.location,
-        'timestamp': ServerValue.timestamp,
-      });
-      print('Post created successfully with key: ${newPostRef.key}');
+      await _firestore.collection('posts').add(post.toMap());
+      print('Post created successfully');
     } catch (e) {
       print('Error creating post: $e');
       rethrow;
@@ -32,13 +24,19 @@ class FirebaseService {
   }
 
   static Future<List<Post>> getPosts() async {
-    final event = await _database.child('posts').once();
-    final data = event.snapshot.value as Map<dynamic, dynamic>?;
-    if (data == null) return [];
-    return data.entries.map((e) {
-      return Post.fromSnapshot(e.key, e.value as Map<dynamic, dynamic>);
-    }).toList()
-      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('posts')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      return querySnapshot.docs.map((doc) {
+        return Post.fromMap(doc.data(), doc.id);
+      }).toList();
+    } catch (e) {
+      print('Error fetching posts: $e');
+      return [];
+    }
   }
 
   static Future<User?> getCurrentUser() async {

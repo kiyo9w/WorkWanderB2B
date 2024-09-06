@@ -1,10 +1,10 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Post {
   final String id;
   final String userId;
   final String content;
-  final List<String> photoUrls; // Change this from String? to List<String>
+  final List<String> photoUrls;
   final String? salaryRange;
   final String? expertise;
   final DateTime? deadline;
@@ -23,17 +23,32 @@ class Post {
     required this.timestamp,
   });
 
-  factory Post.fromSnapshot(String key, Map<dynamic, dynamic> value) {
+  factory Post.fromSnapshot(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
     return Post(
-      id: key,
-      userId: value['userId'] ?? '',
-      content: value['content'] ?? '',
-      photoUrls: List<String>.from(value['photoUrls'] ?? []),
-      salaryRange: value['salaryRange'],
-      expertise: value['expertise'],
-      deadline: value['deadline'] != null ? DateTime.parse(value['deadline']) : null,
-      location: value['location'],
-      timestamp: DateTime.fromMillisecondsSinceEpoch(value['timestamp'] ?? 0),
+      id: snapshot.id,
+      userId: data['userId'] ?? '',
+      content: data['content'] ?? '',
+      photoUrls: List<String>.from(data['photoUrls'] ?? []),
+      salaryRange: data['salaryRange'],
+      expertise: data['expertise'],
+      deadline: data['deadline'] != null ? (data['deadline'] as Timestamp).toDate() : null,
+      location: data['location'],
+      timestamp: (data['timestamp'] as Timestamp).toDate(),
+    );
+  }
+
+  factory Post.fromMap(Map<String, dynamic> map, String id) {
+    return Post(
+      id: id,
+      userId: map['userId'] ?? '',
+      content: map['content'] ?? '',
+      photoUrls: List<String>.from(map['photoUrls'] ?? []),
+      salaryRange: map['salaryRange'],
+      expertise: map['expertise'],
+      deadline: map['deadline'] != null ? (map['deadline'] as Timestamp).toDate() : null,
+      location: map['location'],
+      timestamp: (map['timestamp'] as Timestamp).toDate(),
     );
   }
 
@@ -44,9 +59,9 @@ class Post {
       'photoUrls': photoUrls,
       'salaryRange': salaryRange,
       'expertise': expertise,
-      'deadline': deadline?.toIso8601String(),
+      'deadline': deadline != null ? Timestamp.fromDate(deadline!) : null,
       'location': location,
-      'timestamp': timestamp.millisecondsSinceEpoch,
+      'timestamp': Timestamp.fromDate(timestamp),
     };
   }
 }
