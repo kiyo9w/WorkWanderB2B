@@ -23,6 +23,26 @@ class FirebaseService {
     }
   }
 
+  static Future<void> updatePost(String postId, Map<String, dynamic> updates) async {
+  try {
+    await _firestore.collection('posts').doc(postId).update(updates);
+    print('Post updated successfully');
+  } catch (e) {
+    print('Error updating post: $e');
+    rethrow;
+    }
+  }
+
+  static Future<void> deletePost(String postId) async {
+    try {
+      await _firestore.collection('posts').doc(postId).delete();
+      print('Post deleted successfully');
+    } catch (e) {
+      print('Error deleting post: $e');
+      rethrow;
+    } 
+  }
+
   static Future<List<Post>> getPosts() async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore

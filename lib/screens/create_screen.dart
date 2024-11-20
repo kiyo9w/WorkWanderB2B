@@ -11,9 +11,13 @@ import '../widgets/loading_overlay.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateScreen extends StatefulWidget {
-  const CreateScreen({super.key});
+  final bool isEditing;
+  final Post? post;
+
+  const CreateScreen({super.key, this.isEditing = false, this.post});
 
   @override
   _CreateScreenState createState() => _CreateScreenState();
@@ -433,24 +437,25 @@ class _CreateScreenState extends State<CreateScreen> {
           throw Exception('Failed to upload one or more images.');
         }
       }
-
       if (!_isLoading) return; // Check if cancelled
-      _updateLoadingStatus('Creating post...');
-      final post = Post(
-        id: '', // This will be set by Firebase
-        userId: user.uid,
-        content: _postController.text,
-        photoUrls: uploadedPhotoUrls,
-        salaryRange: _salaryRange,
-        expertise: _expertise,
-        deadline: _deadline,
-        location: _location,
-        timestamp: DateTime.now(),
-      );
+      _updateLoadingStatus(widget.isEditing ? 'Updating post...' : 'Creating post...');
+      
+      final post = {
+        'userId': user.uid,
+        'content': _postController.text,
+        'photoUrls': uploadedPhotoUrls,
+        'salaryRange': _salaryRange,
+        'expertise': _expertise,
+        'deadline': _deadline != null ? Timestamp.fromDate(_deadline!) : null,
+        'location': _location,
+        'timestamp': DateTime.now(),
+      };
 
-      if (!_isLoading) return; // Check if cancelled
-      _updateLoadingStatus('Saving post to database...');
-      await FirebaseService.createPost(post);
+      if (widget.isEditing && widget.post != null) {
+        await FirebaseService.updatePost(widget.post!.id, post);
+      } else {
+        await FirebaseService.createPost(Post.fromMap(post, ''));
+      }
 
       setState(() {
         _isLoading = false;
@@ -458,7 +463,7 @@ class _CreateScreenState extends State<CreateScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Post created successfully!'),
+          content: Text(widget.isEditing ? 'Post updated successfully!' : 'Post created successfully!'),
           backgroundColor: Colors.green,
         ),
       );
@@ -473,18 +478,16 @@ class _CreateScreenState extends State<CreateScreen> {
         _location = null;
       });
 
-      // Navigate back to the home screen
       Navigator.pushReplacementNamed(context, '/main');
     } catch (e) {
-      if (_isLoading) { // Only show error if not cancelled
+      if (_isLoading) {
         setState(() {
           _isLoading = false;
         });
-
-        print('Error creating post: $e');
+        print('Error creating/updating post: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to create post. Please try again. Error: $e'),
+            content: Text('Failed to create/update post. Please try again. Error: $e'),
             backgroundColor: Colors.red,
           ),
         );
