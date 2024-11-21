@@ -11,9 +11,12 @@ import '../widgets/loading_overlay.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class CreateScreen extends StatefulWidget {
-  const CreateScreen({super.key});
+  final bool isEditing;
+  final Post? post;
+  const CreateScreen({super.key, this.isEditing = false, this.post});
 
   @override
   _CreateScreenState createState() => _CreateScreenState();
@@ -28,6 +31,23 @@ class _CreateScreenState extends State<CreateScreen> {
   String? _location;
   bool _isLoading = false;
   String _loadingStatus = '';
+
+    @override
+  void initState() {
+    super.initState();
+    if (widget.isEditing && widget.post != null) {
+      _loadPostData(widget.post!);
+    }
+  }
+
+  void _loadPostData(Post post) {
+    _postController.text = post.content;
+    _photoUrls = post.photoUrls;
+    _salaryRange = post.salaryRange;
+    _expertise = post.expertise;
+    _deadline = post.deadline;
+    _location = post.location;
+  }
 
   void _updateLoadingStatus(String status) {
     setState(() {
@@ -437,7 +457,7 @@ class _CreateScreenState extends State<CreateScreen> {
       if (!_isLoading) return; // Check if cancelled
       _updateLoadingStatus('Creating post...');
       final post = Post(
-        id: '', // This will be set by Firebase
+        id: widget.isEditing ? widget.post!.id : '',
         userId: user.uid,
         content: _postController.text,
         photoUrls: uploadedPhotoUrls,
@@ -448,9 +468,16 @@ class _CreateScreenState extends State<CreateScreen> {
         timestamp: DateTime.now(),
       );
 
+      if (widget.isEditing) {
+        // Call updatePost for editing
+        await FirebaseService.updatePost(post);
+      } else {
+        // Call createPost for new posts
+        await FirebaseService.createPost(post);
+      }
+
       if (!_isLoading) return; // Check if cancelled
       _updateLoadingStatus('Saving post to database...');
-      await FirebaseService.createPost(post);
 
       setState(() {
         _isLoading = false;
@@ -458,7 +485,9 @@ class _CreateScreenState extends State<CreateScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Post created successfully!'),
+          content: Text(widget.isEditing
+              ? 'Post updated successfully!'
+              : 'Post created successfully!'),
           backgroundColor: Colors.green,
         ),
       );
@@ -484,7 +513,7 @@ class _CreateScreenState extends State<CreateScreen> {
         print('Error creating post: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to create post. Please try again. Error: $e'),
+            content: Text('Failed to ${widget.isEditing ? 'update' : 'create'} post. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );

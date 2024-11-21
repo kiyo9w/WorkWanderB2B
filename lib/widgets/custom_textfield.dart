@@ -25,6 +25,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     return TextField(
       controller: widget.controller,
+      keyboardType: widget.keyboardType,
+      obscureText: widget.isPassword ? _obscureText : false,
       decoration: InputDecoration(
         hintText: widget.hintText,
         filled: true,
@@ -49,14 +51,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 ),
                 onPressed: () {
                   setState(() {
-                    _obscureText = !_obscureText;
+                    _obscureText = !_obscureText; // Toggle visibility
                   });
                 },
               )
             : null,
       ),
-      keyboardType: widget.keyboardType,
-      obscureText: widget.isPassword ? _obscureText : false,
     );
   }
 }

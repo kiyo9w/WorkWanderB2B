@@ -19,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
   String _errorMessage = '';
 
   void _showErrorMessage(String message) {
@@ -75,6 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 CustomTextField(
                   controller: _passwordController,
                   hintText: 'Password',
+                  isPassword: true,
                 ),
                 const SizedBox(height: 24.0),
                 Text(
