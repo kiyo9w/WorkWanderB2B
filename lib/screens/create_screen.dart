@@ -11,12 +11,11 @@ import '../widgets/loading_overlay.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class CreateScreen extends StatefulWidget {
   final bool isEditing;
   final Post? post;
-
   const CreateScreen({super.key, this.isEditing = false, this.post});
 
   @override
@@ -32,6 +31,23 @@ class _CreateScreenState extends State<CreateScreen> {
   String? _location;
   bool _isLoading = false;
   String _loadingStatus = '';
+
+    @override
+  void initState() {
+    super.initState();
+    if (widget.isEditing && widget.post != null) {
+      _loadPostData(widget.post!);
+    }
+  }
+
+  void _loadPostData(Post post) {
+    _postController.text = post.content;
+    _photoUrls = post.photoUrls;
+    _salaryRange = post.salaryRange;
+    _expertise = post.expertise;
+    _deadline = post.deadline;
+    _location = post.location;
+  }
 
   void _updateLoadingStatus(String status) {
     setState(() {
@@ -437,25 +453,31 @@ class _CreateScreenState extends State<CreateScreen> {
           throw Exception('Failed to upload one or more images.');
         }
       }
-      if (!_isLoading) return; // Check if cancelled
-      _updateLoadingStatus(widget.isEditing ? 'Updating post...' : 'Creating post...');
-      
-      final post = {
-        'userId': user.uid,
-        'content': _postController.text,
-        'photoUrls': uploadedPhotoUrls,
-        'salaryRange': _salaryRange,
-        'expertise': _expertise,
-        'deadline': _deadline != null ? Timestamp.fromDate(_deadline!) : null,
-        'location': _location,
-        'timestamp': DateTime.now(),
-      };
 
-      if (widget.isEditing && widget.post != null) {
-        await FirebaseService.updatePost(widget.post!.id, post);
+      if (!_isLoading) return; // Check if cancelled
+      _updateLoadingStatus('Creating post...');
+      final post = Post(
+        id: widget.isEditing ? widget.post!.id : '',
+        userId: user.uid,
+        content: _postController.text,
+        photoUrls: uploadedPhotoUrls,
+        salaryRange: _salaryRange,
+        expertise: _expertise,
+        deadline: _deadline,
+        location: _location,
+        timestamp: DateTime.now(),
+      );
+
+      if (widget.isEditing) {
+        // Call updatePost for editing
+        await FirebaseService.updatePost(post);
       } else {
-        await FirebaseService.createPost(Post.fromMap(post, ''));
+        // Call createPost for new posts
+        await FirebaseService.createPost(post);
       }
+
+      if (!_isLoading) return; // Check if cancelled
+      _updateLoadingStatus('Saving post to database...');
 
       setState(() {
         _isLoading = false;
@@ -463,7 +485,9 @@ class _CreateScreenState extends State<CreateScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(widget.isEditing ? 'Post updated successfully!' : 'Post created successfully!'),
+          content: Text(widget.isEditing
+              ? 'Post updated successfully!'
+              : 'Post created successfully!'),
           backgroundColor: Colors.green,
         ),
       );
@@ -478,16 +502,18 @@ class _CreateScreenState extends State<CreateScreen> {
         _location = null;
       });
 
+      // Navigate back to the home screen
       Navigator.pushReplacementNamed(context, '/main');
     } catch (e) {
-      if (_isLoading) {
+      if (_isLoading) { // Only show error if not cancelled
         setState(() {
           _isLoading = false;
         });
-        print('Error creating/updating post: $e');
+
+        print('Error creating post: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to create/update post. Please try again. Error: $e'),
+            content: Text('Failed to ${widget.isEditing ? 'update' : 'create'} post. Please try again.'),
             backgroundColor: Colors.red,
           ),
         );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/post.dart';
+import '../screens/create_screen.dart';
+import '../services/firebase_service.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;
@@ -19,7 +21,6 @@ class PostCard extends StatelessWidget {
               post.content,
               style: TextStyle(fontSize: 16),
             ),
-            SizedBox(height: 8),
             if (post.photoUrls.isNotEmpty)
               Image.network(
                 post.photoUrls.first,
@@ -36,9 +37,46 @@ class PostCard extends StatelessWidget {
               Text('Deadline: ${post.deadline.toString()}'),
             if (post.location != null)
               Text('Location: ${post.location}'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CreateScreen(
+                          isEditing: true,
+                          post: post,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    _deletePost(context, post.id);
+                  },
+                ),
+              ],
+            )
           ],
         ),
       ),
     );
+  }
+
+  void _deletePost(BuildContext context, String postId) {
+    FirebaseService.deletePost(postId).then((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Post deleted successfully!')),
+      );
+    }).catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete post.')),
+      );
+    });
   }
 }
