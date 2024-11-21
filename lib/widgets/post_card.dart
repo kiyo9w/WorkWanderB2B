@@ -5,8 +5,9 @@ import '../services/firebase_service.dart';
 
 class PostCard extends StatelessWidget {
   final Post post;
+  final VoidCallback onDelete;
 
-  const PostCard({Key? key, required this.post}) : super(key: key);
+  const PostCard({Key? key, required this.post, required this.onDelete}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +74,7 @@ class PostCard extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Post deleted successfully!')),
       );
+      onDelete(); // Call the refresh callback here
     }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to delete post.')),

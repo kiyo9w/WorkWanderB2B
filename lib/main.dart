@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'A B2B Prototype',
+      title: 'Work Wander',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
