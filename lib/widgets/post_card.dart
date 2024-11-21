@@ -68,7 +68,6 @@ class PostCard extends StatelessWidget {
       ),
     );
   }
-
   void _deletePost(BuildContext context, String postId) {
     FirebaseService.deletePost(postId).then((_) {
       ScaffoldMessenger.of(context).showSnackBar(

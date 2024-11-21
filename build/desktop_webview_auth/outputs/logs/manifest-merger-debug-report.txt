@@ -1,0 +1,25 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml:1:1-2:12
+INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml:1:1-2:12
+INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml:1:1-2:12
+	package
+		INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml
+		ADDED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml:1:1-2:12
+		INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml:1:11-69
+uses-sdk
+INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml
+INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml
+INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml
+INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml
+		ADDED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml
+		ADDED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/kiyo9w/.pub-cache/hosted/pub.dev/desktop_webview_auth-0.0.15/android/src/main/AndroidManifest.xml

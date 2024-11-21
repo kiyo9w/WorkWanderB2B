@@ -2,14 +2,14 @@ import 'package:a_business_app/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
-import 'screens/login_screen.dart';
-import 'screens/register_screen.dart';
-import 'screens/following_screen.dart';
-import 'screens/notification_screen.dart';
-import 'screens/create_screen.dart';
-import 'screens/user_profile.dart';
-import 'screens/main_screen_container.dart';
+import '../screens/home_screen.dart';
+import '../screens/login_screen.dart';
+import '../screens/register_screen.dart';
+import '../screens/following_screen.dart';
+import '../screens/notification_screen.dart';
+import '../screens/create_screen.dart';
+import '../screens/user_profile.dart';
+import '../screens/main_screen_container.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
