@@ -416,7 +416,7 @@ class _CreateScreenState extends State<CreateScreen> {
             });
             Navigator.of(context).pop();
           },
-          initialPosition: LatLng(37.7749, -122.4194), // Default to San Francisco
+          initialPosition: LatLng(21.0278, 105.8342),
           useCurrentLocation: true,
         ),
       ),
